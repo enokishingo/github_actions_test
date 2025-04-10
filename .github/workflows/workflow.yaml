@@ -1,11 +1,9 @@
-name: Terraform Workflow
+name: Terraform Workflow on Dev
 
 on:
   push:
     paths:
-      - 'terraform/virtual_hub/**'
-      - 'terraform/dev/**'
-      - 'terraform/prod/**'
+      - 'terraform/dev/spoke_vnet/**'
   workflow_dispatch:
 
 jobs:
@@ -13,20 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        directory: ${{ fromJson('[' + join(",", github.event.commits.*.modified | map(x => x | split("/")[:-1] | join("/")) | unique | map(x => "\"" + x + "\"")) + ']') }}
+        directory: ${{ fromJson('[' + join(',', github.event.commits.*.modified | map(x => x | split('/')[:-1] | join('/')) | unique | map(x => '"' + x + '"')) + ']') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Set Working Directory
-        id: set-dir
-        run: |
-          echo "Working directory: ${{ matrix.directory }}"
-          echo "::set-output name=working-directory::${{ matrix.directory }}"
-
-      - name: Pwd
-        working-directory: ${{ matrix.directory }}
-        run: pwd
 
       - name: Terraform Format Check
         working-directory: ${{ matrix.directory }}
