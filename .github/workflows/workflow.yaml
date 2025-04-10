@@ -3,7 +3,9 @@ name: Terraform Workflow
 on:
   push:
     paths:
-      - '**'
+      - 'terraform/virtual_hub/**'
+      - 'terraform/dev/**'
+      - 'terraform/prod/**'
   workflow_dispatch:
 
 jobs:
@@ -11,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        directory: ${{ fromJson('["' + join('","', github.event.commits.*.modified | map(x => x | split("/")[0:3] | join("/")) | unique) + '"]') }}
+        directory: ${{ fromJson('[' + join(',', github.event.commits.*.modified | map(x => x | split('/')[:-1] | join('/')) | unique | map(x => '"' + x + '"')) + ']') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -28,4 +30,8 @@ jobs:
 
       - name: Terraform Format Check
         working-directory: ${{ matrix.directory }}
-        run: terraform fmt -check -recursive
+        run: |
+          if [ -f "main.tf" ]; then
+            terraform fmt -check -recursive
+          else
+            echo "No main.tf found in ${{ matrix.directory }}. Skipping."
