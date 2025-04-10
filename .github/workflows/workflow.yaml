@@ -9,17 +9,24 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        directory: ${{ github.event.commits.*.modified | map(x => x | split('/')[:-1] | join('/')) | unique }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Terraform Format Check
-        working-directory: ${{ matrix.directory }}
+      - name: Extract modified directories
+        id: extract_dirs
         run: |
-          if [ -f "main.tf" ]; then
-            terraform fmt -check -recursive
-          else
-            echo "No main.tf found in ${{ matrix.directory }}. Skipping."
+          dirs=$(jq -r '[.commits[].modified[] | select(test("^terraform/dev/spoke_vnet/")) | split("/")[0:-1] | join("/") | unique] | .[]' < "${GITHUB_EVENT_PATH}")
+          echo "directories=${dirs}" >> $GITHUB_ENV
+
+      - name: Terraform Format Check
+        if: ${{ fromJson(env.directories) }}
+        run: |
+          for dir in ${{ fromJson(env.directories) }}; do
+            if [ -f "${dir}/main.tf" ]; then
+              echo "Running terraform fmt in ${dir}"
+              terraform fmt -check -recursive "${dir}"
+            else
+              echo "No main.tf found in ${dir}. Skipping."
+            fi
+          done
