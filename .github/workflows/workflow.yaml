@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        directory: ${{ fromJson('[' + join(',', github.event.commits.*.modified | map(x => x | split("/")[:-1] | join("/")) | unique | map(x => '"' + x + '"')) + ']') }}
+        directory: ${{ fromJson('[' + join(",", github.event.commits.*.modified | map(x => x | split("/")[:-1] | join("/")) | unique | map(x => "\"" + x + "\"")) + ']') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
