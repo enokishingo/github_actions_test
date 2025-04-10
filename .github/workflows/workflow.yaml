@@ -8,7 +8,7 @@ on:
 
 jobs:
   terraform-fmt-systemA:
-    if: ${{ github.event_name == 'push' && github.event.commits.*.modified | join(' ') contains 'terraform/dev/spoke_vnet/systemA/' }}
+    if: ${{ github.event.paths && contains(github.event.paths, 'terraform/dev/spoke_vnet/systemA/') }}
     runs-on: ubuntu-latest
 
     steps:
@@ -24,7 +24,7 @@ jobs:
         run: terraform fmt -recursive terraform/dev/spoke_vnet/systemA/main.tf
 
   terraform-fmt-systemB:
-    if: ${{ github.event_name == 'push' && github.event.commits.*.modified | join(' ') contains 'terraform/dev/spoke_vnet/systemB/' }}
+    if: ${{ github.event.paths && contains(github.event.paths, 'terraform/dev/spoke_vnet/systemB/') }}
     runs-on: ubuntu-latest
 
     steps:
