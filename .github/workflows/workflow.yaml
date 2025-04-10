@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        directory: ${{ fromJson('[' + join(',', github.event.commits.*.modified | map(x => x | split('/')[0:3] | join('/')) | unique | map(x => '"' + x + '"')) + ']') }}
+        directory: ${{ fromJson('["' + join('","', github.event.commits.*.modified | map(x => x | split("/")[0:3] | join("/")) | unique) + '"]') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -21,6 +21,10 @@ jobs:
         run: |
           echo "Working directory: ${{ matrix.directory }}"
           echo "::set-output name=working-directory::${{ matrix.directory }}"
+
+      - name: Pwd
+        working-directory: ${{ matrix.directory }}
+        run: pwd
 
       - name: Terraform Format Check
         working-directory: ${{ matrix.directory }}
