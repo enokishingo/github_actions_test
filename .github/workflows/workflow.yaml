@@ -19,22 +19,17 @@ jobs:
           jq_result=$(jq -r '
             [
               .commits[].modified[]? 
+              | select(test("^terraform/dev/spoke_vnet/[^/]+/")) 
+              | split("/")[0:4] 
+              | join("/") 
+              | unique
             ] 
             | .[]
           ' < "${GITHUB_EVENT_PATH}")
 
           echo "jq command result: ${jq_result}"
 
-          dirs=$(jq -r '
-            [
-              .commits[].modified[]? 
-              | select(test("^terraform/dev/spoke_vnet/")) 
-              | split("/")[:-1] 
-              | join("/") 
-              | unique
-            ] 
-            | .[]
-          ' < "${GITHUB_EVENT_PATH}")
+          dirs="${jq_result}"
           if [ -z "$dirs" ]; then
             echo "No modified directories found."
             echo "directories=[]" >> $GITHUB_ENV
