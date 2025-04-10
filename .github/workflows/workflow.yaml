@@ -1,0 +1,49 @@
+name: Terraform Format
+
+on:
+  push:
+    paths:
+      - 'terraform/dev/spoke_vnet/**'
+
+jobs:
+  check_changed_dirs:
+    runs-on: ubuntu-20.04
+    outputs:
+      changes: ${{ steps.pr_dir_changes.outputs.changes }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - id: pr_dir_changes
+        name: Detect Changed Directories
+        # masterと差分のあるディレクトリのみを抽出する
+        # https://stackoverflow.com/questions/50440420/git-diff-only-show-which-directories-changed
+        run: echo "changes="[$(git diff origin/"${GITHUB_BASE_REF}" --dirstat=files,0 | awk '{print $2}' | sed -e 's:/*$::' | grep 'dev/spoke_vnet' | awk '{ print "\""$0"\""}' | paste -sd, -)]"" >> "$GITHUB_OUTPUT"
+
+  tf-ci:
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: 'write'
+      id-token: 'write'
+      pull-requests: 'write'
+    timeout-minutes: 20
+    needs: check_changed_dirs
+    strategy:
+      matrix:
+        dir: ${{ fromJSON(needs.check_changed_dirs.outputs.changes) }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ matrix.dir }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Print Changed Directory
+        run: echo ${{ matrix.dir }}
+
+      - name: Run Terraform Format
+        run: terraform fmt
+        continue-on-error: true
