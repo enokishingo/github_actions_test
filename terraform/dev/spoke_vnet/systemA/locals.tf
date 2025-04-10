@@ -93,7 +93,7 @@ locals {
 
   # リソース命名規則
   resource_names = {
-    rg   = "rg-${local.system_name}-${local.environment}-${local.location}-003"
+    rg   = "rg-${local.system_name}-${local.environment}-${local.location}-001"
     common_rg = "rg-common-${local.environment}-${local.location}-001"
     vnet = "vnet-${local.system_name}-${local.environment}-${local.location}-001"
     subnet = {

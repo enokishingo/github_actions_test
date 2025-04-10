@@ -1,4 +1,4 @@
-name: Terraform Workflow on Dev
+name: Terraform Workflow
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        directory: ${{ fromJson('[' + join(',', github.event.commits.*.modified | map(x => x | split('/')[:-1] | join('/')) | unique | map(x => '"' + x + '"')) + ']') }}
+        directory: ${{ github.event.commits.*.modified | map(x => x | split('/')[:-1] | join('/')) | unique }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
