@@ -1,7 +1,9 @@
-name: Terraform Format
+name: Terraform Format for dev/spoke_vnet
 
 on:
   pull_request:
+    branches:
+      - main
     paths:
       - 'terraform/dev/spoke_vnet/**'
 
@@ -18,7 +20,7 @@ jobs:
 
       - id: pr_dir_changes
         name: Detect Changed Directories
-        # mainと差分のあるディレクトリのみを抽出する
+        # mainブランチと差分のあるディレクトリのみを抽出する
         # changesに入る値の例："terraform/dev/spoke_vnet/systemA","terraform/dev/spoke_vnet/systemB"
         run: echo "changes="[$(git diff origin/main --dirstat=files,0 | grep 'dev/spoke_vnet' | awk '{print "\""$2"\""}' | paste -sd, -)]"" >> "$GITHUB_OUTPUT"
 
