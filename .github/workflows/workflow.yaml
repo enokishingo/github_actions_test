@@ -4,9 +4,11 @@ on:
   push:
     paths:
       - 'terraform/dev/spoke_vnet/systemA/**'
+      - 'terraform/dev/spoke_vnet/systemB/**'
 
 jobs:
   terraform-fmt-systemA:
+    if: ${{ github.event.pull_request == null && github.event.commits.*.modified | join(' ') contains 'terraform/dev/spoke_vnet/systemA/' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -20,3 +22,19 @@ jobs:
 
       - name: Run terraform fmt for systemA
         run: terraform fmt -recursive terraform/dev/spoke_vnet/systemA/main.tf
+
+  terraform-fmt-systemB:
+    if: ${{ github.event.pull_request == null && github.event.commits.*.modified | join(' ') contains 'terraform/dev/spoke_vnet/systemB/' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: latest
+
+      - name: Run terraform fmt for systemB
+        run: terraform fmt -recursive terraform/dev/spoke_vnet/systemB/main.tf
