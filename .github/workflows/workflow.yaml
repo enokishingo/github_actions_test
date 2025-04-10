@@ -16,7 +16,6 @@ jobs:
       - name: Extract modified directories
         id: extract_dirs
         run: |
-          jq -r
           jq -r '[.commits[].modified[]?
           jq -r '[.commits[].modified[]? | select(test("^terraform/dev/spoke_vnet/"))
           jq -r '[.commits[].modified[]? | select(test("^terraform/dev/spoke_vnet/")) | split("/")[0:-1]
