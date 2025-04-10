@@ -6,7 +6,7 @@ on:
       - 'terraform/dev/spoke_vnet/**'
 
 jobs:
-  check_changed_dirs:
+  detect_changed_dirs:
     runs-on: ubuntu-20.04
     outputs:
       changes: ${{ steps.pr_dir_changes.outputs.changes }}
@@ -15,10 +15,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
-      - id: pr_dir_changes_test
-        name: Detect Changed Directories
-        run: git diff origin/"${GITHUB_BASE_REF}" --dirstat=files,0
 
       - id: pr_dir_changes
         name: Detect Changed Directories
@@ -31,7 +27,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        dir: ${{ fromJSON(needs.check_changed_dirs.outputs.changes) }}
+        dir: ${{ fromJSON(needs.detect_changed_dirs.outputs.changes) }}
     defaults:
       run:
         shell: bash
