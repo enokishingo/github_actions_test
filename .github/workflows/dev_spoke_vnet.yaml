@@ -23,7 +23,7 @@ jobs:
         run: echo "changes="[$(git diff origin/main --dirstat=files,0 | grep 'dev/spoke_vnet' | awk '{print "\""$2"\""}' | paste -sd, -)]"" >> "$GITHUB_OUTPUT"
 
   terraform_fmt:
-    needs: check_changed_dirs
+    needs: detect_changed_dirs
     runs-on: ubuntu-20.04
     strategy:
       matrix:
