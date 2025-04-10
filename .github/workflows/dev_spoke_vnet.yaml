@@ -18,6 +18,10 @@ jobs:
 
       - id: pr_dir_changes
         name: Detect Changed Directories
+        run: git diff origin/"${GITHUB_BASE_REF}" --dirstat=files,0
+
+      - id: pr_dir_changes
+        name: Detect Changed Directories
         # masterと差分のあるディレクトリのみを抽出する
         # https://stackoverflow.com/questions/50440420/git-diff-only-show-which-directories-changed
         run: echo "changes="[$(git diff origin/"${GITHUB_BASE_REF}" --dirstat=files,0 | awk '{print $2}' | sed -e 's:/*$::' | grep 'dev/spoke_vnet' | awk '{ print "\""$0"\""}' | paste -sd, -)]"" >> "$GITHUB_OUTPUT"
