@@ -16,11 +16,16 @@ jobs:
       - name: Extract modified directories
         id: extract_dirs
         run: |
-          dirs=$(jq -r '[.commits[].modified[] | select(test("^terraform/dev/spoke_vnet/")) | split("/")[0:-1] | join("/") | unique] | .[]' < "${GITHUB_EVENT_PATH}")
-          echo "directories=${dirs}" >> $GITHUB_ENV
+          dirs=$(jq -r '[.commits[].modified[]? | select(test("^terraform/dev/spoke_vnet/")) | split("/")[0:-1] | join("/") | unique] | .[]' < "${GITHUB_EVENT_PATH}")
+          if [ -z "$dirs" ]; then
+            echo "No modified directories found."
+            echo "directories=[]" >> $GITHUB_ENV
+          else
+            echo "directories=[${dirs}]" >> $GITHUB_ENV
+          fi
 
       - name: Terraform Format Check
-        if: ${{ fromJson(env.directories) }}
+        if: ${{ env.directories != '[]' }}
         run: |
           for dir in ${{ fromJson(env.directories) }}; do
             if [ -f "${dir}/main.tf" ]; then
