@@ -6,7 +6,7 @@ on:
       - 'terraform/dev/spoke_vnet/systemA/**'
 
 jobs:
-  terraform-fmt-systemA:
+  terraform_plan:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,9 +14,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: latest
 
-      - name: Run terraform fmt for systemA
+      - name: Run terraform fmt
+        run: pwd 
+
+      - name: Run terraform fmt
         run: terraform fmt -recursive terraform/dev/spoke_vnet/systemA/main.tf

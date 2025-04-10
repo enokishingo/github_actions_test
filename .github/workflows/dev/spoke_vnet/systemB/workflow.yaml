@@ -1,4 +1,4 @@
-name: Terraform Format for SystemB
+name: Terraform Workflow for SystemB
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - 'terraform/dev/spoke_vnet/systemB/**'
 
 jobs:
-  terraform-fmt-systemB:
+  terraform-plan:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,5 +18,5 @@ jobs:
         with:
           terraform_version: latest
 
-      - name: Run terraform fmt for systemB
+      - name: Run terraform fmt
         run: terraform fmt -recursive terraform/dev/spoke_vnet/systemB/main.tf
