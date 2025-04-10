@@ -3,10 +3,10 @@ name: Terraform Format
 on:
   push:
     paths:
-      - 'terraform/dev/spoke_vnet/systemA/**'
+      - 'terraform/dev/spoke_vnet/systemB/**'
 
 jobs:
-  terraform-fmt-systemA:
+  terraform-fmt-systemB:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,5 +18,5 @@ jobs:
         with:
           terraform_version: latest
 
-      - name: Run terraform fmt for systemA
-        run: terraform fmt -recursive terraform/dev/spoke_vnet/systemA/main.tf
+      - name: Run terraform fmt for systemB
+        run: terraform fmt -recursive terraform/dev/spoke_vnet/systemB/main.tf
