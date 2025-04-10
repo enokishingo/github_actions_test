@@ -16,10 +16,15 @@ jobs:
       - name: Extract modified directories
         id: extract_dirs
         run: |
-          jq -r '[.commits[].modified[]?
-          jq -r '[.commits[].modified[]? | select(test("^terraform/dev/spoke_vnet/"))
-          jq -r '[.commits[].modified[]? | select(test("^terraform/dev/spoke_vnet/")) | split("/")[0:-1]
-          jq -r '[.commits[].modified[]? | select(test("^terraform/dev/spoke_vnet/")) | split("/")[0:-1] | join("/")
+          jq_result=$(jq -r '
+            [
+              .commits[].modified[]? 
+            ] 
+            | .[]
+          ' < "${GITHUB_EVENT_PATH}")
+
+          echo "jq command result: ${jq_result}"
+
           dirs=$(jq -r '
             [
               .commits[].modified[]? 
