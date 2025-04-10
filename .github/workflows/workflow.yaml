@@ -1,50 +1,22 @@
-name: Terraform Workflow
+name: Terraform Format
 
 on:
   push:
     paths:
-      - 'terraform/dev/spoke_vnet/**'
-  workflow_dispatch:
+      - 'terraform/dev/spoke_vnet/systemA/**'
 
 jobs:
-  terraform:
+  terraform-fmt:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Extract modified directories
-        id: extract_dirs
-        run: |
-          jq_result=$(jq -r '
-            [
-              .commits[].modified[]? 
-              | select(test("^terraform/dev/spoke_vnet/[^/]+/")) 
-              | split("/")[0:4] 
-              | join("/") 
-              | unique
-            ] 
-            | .[]
-          ' < "${GITHUB_EVENT_PATH}")
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: latest
 
-          echo "jq command result: ${jq_result}"
-
-          dirs="${jq_result}"
-          if [ -z "$dirs" ]; then
-            echo "No modified directories found."
-            echo "directories=[]" >> $GITHUB_ENV
-          else
-            echo "directories=[${dirs}]" >> $GITHUB_ENV
-          fi
-
-      - name: Terraform Format Check
-        if: ${{ env.directories != '[]' }}
-        run: |
-          for dir in ${{ fromJson(env.directories) }}; do
-            if [ -f "${dir}/main.tf" ]; then
-              echo "Running terraform fmt in ${dir}"
-              terraform fmt -check -recursive "${dir}"
-            else
-              echo "No main.tf found in ${dir}. Skipping."
-            fi
-          done
+      - name: Run terraform fmt
+        run: terraform fmt -recursive terraform/dev/spoke_vnet/systemA/main.tf
