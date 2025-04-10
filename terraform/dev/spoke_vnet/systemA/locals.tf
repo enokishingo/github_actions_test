@@ -98,7 +98,7 @@ locals {
     vnet = "vnet-${local.system_name}-${local.environment}-${local.location}-001"
     subnet = {
       for key in keys(local.subnet_prefixes) :
-      key => "snet-${key}-${local.system_name}-${local.environment}-${local.location}-003"
+      key => "snet-${key}-${local.system_name}-${local.environment}-${local.location}-002"
     }
     aoai       = "aoai-${local.system_name}-${local.environment}-${local.location}-001"
     appgw      = "appgw-${local.system_name}-${local.environment}-${local.location}-001"
