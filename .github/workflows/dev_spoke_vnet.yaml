@@ -16,7 +16,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - id: pr_dir_changes
+      - id: pr_dir_changes_test
         name: Detect Changed Directories
         run: git diff origin/"${GITHUB_BASE_REF}" --dirstat=files,0
 
