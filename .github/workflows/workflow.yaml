@@ -16,7 +16,21 @@ jobs:
       - name: Extract modified directories
         id: extract_dirs
         run: |
-          dirs=$(jq -r '[.commits[].modified[]? | select(test("^terraform/dev/spoke_vnet/")) | split("/")[0:-1] | join("/") | unique] | .[]' < "${GITHUB_EVENT_PATH}")
+          jq -r
+          jq -r '[.commits[].modified[]?
+          jq -r '[.commits[].modified[]? | select(test("^terraform/dev/spoke_vnet/"))
+          jq -r '[.commits[].modified[]? | select(test("^terraform/dev/spoke_vnet/")) | split("/")[0:-1]
+          jq -r '[.commits[].modified[]? | select(test("^terraform/dev/spoke_vnet/")) | split("/")[0:-1] | join("/")
+          dirs=$(jq -r '
+            [
+              .commits[].modified[]? 
+              | select(test("^terraform/dev/spoke_vnet/")) 
+              | split("/")[:-1] 
+              | join("/") 
+              | unique
+            ] 
+            | .[]
+          ' < "${GITHUB_EVENT_PATH}")
           if [ -z "$dirs" ]; then
             echo "No modified directories found."
             echo "directories=[]" >> $GITHUB_ENV
