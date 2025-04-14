@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'terraform/dev/spoke_vnet/**'
+  workflow_dispatch:
 
 jobs:
   detect_changed_dirs:
