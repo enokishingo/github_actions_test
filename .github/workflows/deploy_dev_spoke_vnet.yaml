@@ -1,12 +1,15 @@
-name: Terraform Format
+name: Terraform Format for dev/spoke_vnet
 
 on:
-  push:
+  pull_request:
+    branches:
+      - main
     paths:
       - 'terraform/dev/spoke_vnet/**'
+  workflow_dispatch:
 
 jobs:
-  check_changed_dirs:
+  detect_changed_dirs:
     runs-on: ubuntu-20.04
     outputs:
       changes: ${{ steps.pr_dir_changes.outputs.changes }}
@@ -18,21 +21,16 @@ jobs:
 
       - id: pr_dir_changes
         name: Detect Changed Directories
-        # masterと差分のあるディレクトリのみを抽出する
-        # https://stackoverflow.com/questions/50440420/git-diff-only-show-which-directories-changed
-        run: echo "changes="[$(git diff origin/"${GITHUB_BASE_REF}" --dirstat=files,0 | awk '{print $2}' | sed -e 's:/*$::' | grep 'dev/spoke_vnet' | awk '{ print "\""$0"\""}' | paste -sd, -)]"" >> "$GITHUB_OUTPUT"
+        # mainブランチと差分のあるディレクトリのみを抽出する
+        # changesに入る値の例："terraform/dev/spoke_vnet/systemA","terraform/dev/spoke_vnet/systemB"
+        run: echo "changes="[$(git diff origin/main --dirstat=files,0 | grep 'dev/spoke_vnet' | awk '{print "\""$2"\""}' | paste -sd, -)]"" >> "$GITHUB_OUTPUT"
 
-  tf-ci:
+  terraform_fmt:
+    needs: detect_changed_dirs
     runs-on: ubuntu-20.04
-    permissions:
-      contents: 'write'
-      id-token: 'write'
-      pull-requests: 'write'
-    timeout-minutes: 20
-    needs: check_changed_dirs
     strategy:
       matrix:
-        dir: ${{ fromJSON(needs.check_changed_dirs.outputs.changes) }}
+        dir: ${{ fromJSON(needs.detect_changed_dirs.outputs.changes) }}
     defaults:
       run:
         shell: bash
